@@ -8,7 +8,7 @@ class Charmander
     @intestine = 0 #empty bowe
     @crankiness = 0 #not cranky
     @asleep = false
-
+    @pooped = false
     puts "#{@name} is born!"
   end
 
@@ -24,14 +24,16 @@ class Charmander
     @crankiness = 0
     puts "You tucked #{@name} into bed and now he is asleep"
     3.times do 
-      puts "#{@name}: ZzZzZzZzZzZz"
-      time_passes
       if !@asleep
         break
       end
+      puts "#{@name}: ZzZzZzZzZzZz"
+      time_passes
     end
     @asleep = false
-    puts "#{@name} slowly opens his eyes and wakes up" unless hungry? || poopy?
+    unless hungry? or poopy? or @pooped
+      puts "#{@name} slowly opens his eyes and wakes up" 
+    end
   end
 
   def walk
@@ -86,6 +88,10 @@ class Charmander
       puts "#{@name} becomes very cranky and scratches you out of frustration."
     end
 
+    if @pooped
+      @pooped = false
+    end
+
     if @stomach > 0 
       @stomach -= 1
       @intestine += 1
@@ -116,6 +122,7 @@ class Charmander
       if @intestine >= 10
         puts "#{@name} drops a deuce right are your feet because you didn't take him out. Serves you right."
         @intestine = 0
+        @pooped = true
       end
     end
 
@@ -164,26 +171,7 @@ end
     
     
 
-#   if inputs.include? input
-#     if input == "feed"
-#       pet.feed
-#     elsif input == "walk"
-#       pet.walk
-#     elsif input == "toss"
-#       pet.toss
-#     elsif input == "fetch"
-#       pet.fetch
-#     elsif input == "scold"
-#       pet.scold
-#     elsif input == "tuckin"
-#       pet.tuck_in
-#     else
-#       puts "This isn't working"
-#     end
-#   else
-#     puts "Invalid command."
-#   end
-# end  
+
 
 
 
