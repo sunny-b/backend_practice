@@ -1,10 +1,13 @@
-def number_eval
+def number
   print "Please print a number above 0: "
-  number = gets.chomp.to_i
+  return gets.chomp.to_i
+end
+
+def eval (num)
   answer = case
-  when number <= 50
+  when num <= 50
     "a is between 0 and 50"
-  when number <= 100
+  when num <= 100
     "a is between 51 and 100"
   else
     "number is above 100"
@@ -12,4 +15,4 @@ def number_eval
   puts answer
 end
 
-number_eval
+eval(number)
