@@ -1,5 +1,0 @@
-mkdir my_folder
-cd my_folder
-touch one.rb two.rb
-echo "This is file one" >> one.rb
-echo "this is file two" >> two.rb
