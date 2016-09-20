@@ -1,0 +1,27 @@
+body {
+  font-size: 20px;
+  color: #666;
+}
+
+h1 {
+  color: cadetblue;
+}
+
+.ingredients h2 {
+  color: crimson;
+}
+
+.ingredients p {
+  font-style: italic;
+}
+
+.directions h2 {
+  color: cyan;
+}
+
+.directions p {
+  font-family: sans-serif;
+}
+
+
+
