@@ -168,20 +168,3 @@ while game
     puts "Invalid command."
   end
 end
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
