@@ -71,6 +71,14 @@ end
 player_score = 0
 computer_score = 0
 
+welcome_message = <<~MSG
+Welcome to Rock Paper Scissors Lizard Spock
+=> The first to 5 points wins!
+MSG
+
+prompt(welcome_message)
+puts
+
 loop do
   choice = nil
 
@@ -84,10 +92,10 @@ loop do
 
     prompt(possible_choices)
     choice = Kernel.gets().chomp()
-    choice.downcase!
-    choice = VALID_CHOICES[choice]
+    choice = VALID_CHOICES[choice.downcase]
 
     break if VALID_CHOICES.value?(choice)
+    puts
     prompt("Invalid choice.")
   end
 

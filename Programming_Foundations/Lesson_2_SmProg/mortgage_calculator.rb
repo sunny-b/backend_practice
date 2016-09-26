@@ -3,7 +3,7 @@ def prompt(message)
 end
 
 def valid_number?(num)
-  num.to_i.to_s == num || num.to_f.to_s == num
+  (num.to_i.to_s == num || num.to_f.to_s == num) && num.to_i >= 0
 end
 
 def retrieve_user_input(question)
@@ -18,41 +18,41 @@ def retrieve_user_input(question)
   end
 end
 
-loan_amount = nil
-apr = nil
-duration_years = nil
-monthly_payment = nil
-monthly_interest = nil
-duration_months = nil
-
 prompt("Welcome to Mortgage Calculator!")
 puts
 loop do
-  loan_amount = retrieve_user_input("Enter your total loan amount in dollars:")
+  loan_amount = retrieve_user_input("Enter your total loan amount:").to_f
 
   apr_request = <<-MSG
   What is your APR?
   (Example: 5 for 5% or 2.5 for 2.5%)
   MSG
 
-  apr = retrieve_user_input(apr_request)
+  apr = retrieve_user_input(apr_request).to_f
 
   duration_years = retrieve_user_input("Enter your loan duration in years:")
 
-  monthly_interest = apr.to_f / 1200.0
+  monthly_interest = apr / 1200.0
   duration_months = duration_years.to_f * 12.0
 
-  monthly_payment = loan_amount.to_f *
-                    (monthly_interest /
-                    (1 - (1 + monthly_interest)**-duration_months))
+  if duration_months.zero?
+    monthly_payment = loan_amount
+  elsif apr.zero?
+    monthly_payment = loan_amount / duration_months
+  else
+    monthly_payment = loan_amount *
+                      (monthly_interest /
+                      (1 - (1 + monthly_interest)**-duration_months))
+  end
 
   prompt("Based on the information you've given...")
-  prompt("Your monthly payment shoulde be " \
-         "$#{format('%02.2f', monthly_payment)} a month")
+  prompt("Your monthly payment should be " \
+         "$#{format('%02.2f', monthly_payment)}") unless duration_months.zero?
+  prompt("Your total payment is $#{monthly_payment}") if duration_months.zero?
   puts
   prompt("Would you like to calculate another mortgage?(Y/N)")
-  calc_again = gets.chomp
-  break unless calc_again.casecmp('y').zero? || calc_again.casecmp('yes').zero?
+  calc_again = gets.chomp.downcase
+  break unless calc_again == 'y' || calc_again == 'yes'
 end
 
-prompt("Thanks for using Mortgage Calculator!")
+prompt("Thank you for using Mortgage Calculator, goodbye!")
