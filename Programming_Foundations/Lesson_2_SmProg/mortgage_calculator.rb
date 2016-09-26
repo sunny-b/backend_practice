@@ -3,7 +3,7 @@ def prompt(message)
 end
 
 def valid_number?(num)
-  num =~ /[[:digit:]]/
+  num.to_i.to_s == num || num.to_f.to_s == num
 end
 
 def retrieve_user_input(question)
@@ -18,17 +18,17 @@ def retrieve_user_input(question)
   end
 end
 
-amount = nil
+loan_amount = nil
 apr = nil
 duration_years = nil
-payment = nil
+monthly_payment = nil
 monthly_interest = nil
 duration_months = nil
 
 prompt("Welcome to Mortgage Calculator!")
 puts
 loop do
-  amount = retrieve_user_input("What is your total loan amount in dollars?")
+  loan_amount = retrieve_user_input("Enter your total loan amount in dollars:")
 
   apr_request = <<-MSG
   What is your APR?
@@ -37,19 +37,22 @@ loop do
 
   apr = retrieve_user_input(apr_request)
 
-  duration_years = retrieve_user_input("What is your loan duration in years?")
+  duration_years = retrieve_user_input("Enter your loan duration in years:")
 
   monthly_interest = apr.to_f / 1200.0
   duration_months = duration_years.to_f * 12.0
 
-  payment = amount.to_f *
-            (monthly_interest /
-            (1 - (1 + monthly_interest)**-duration_months))
+  monthly_payment = loan_amount.to_f *
+                    (monthly_interest /
+                    (1 - (1 + monthly_interest)**-duration_months))
 
   prompt("Based on the information you've given...")
-  prompt("Your monthly payment should be $#{format('%02.2f', payment)} a month")
+  prompt("Your monthly payment shoulde be " \
+         "$#{format('%02.2f', monthly_payment)} a month")
   puts
   prompt("Would you like to calculate another mortgage?(Y/N)")
-  again = gets.chomp
-  break unless again.downcase.start_with? == 'y'
+  calc_again = gets.chomp
+  break unless calc_again.casecmp('y').zero? || calc_again.casecmp('yes').zero?
 end
+
+prompt("Thanks for using Mortgage Calculator!")
