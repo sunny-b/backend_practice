@@ -70,6 +70,7 @@ end
 
 player_score = 0
 computer_score = 0
+name = nil
 
 welcome_message = <<~MSG
 Welcome to Rock Paper Scissors Lizard Spock
@@ -77,6 +78,16 @@ Welcome to Rock Paper Scissors Lizard Spock
 MSG
 
 prompt(welcome_message)
+loop do
+  prompt("What is your name?")
+  name = Kernel.gets().chomp()
+  if name.empty?
+    prompt("Please enter your name.")
+  else
+    break
+  end
+end
+
 puts
 
 loop do

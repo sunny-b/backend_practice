@@ -3,7 +3,7 @@ def prompt(message)
 end
 
 def valid_number?(num)
-  (num.to_i.to_s == num || num.to_f.to_s == num) && num.to_i >= 0
+  (num.to_i.to_s == num || num.to_f.to_s == num) && num.to_f >= 0
 end
 
 def retrieve_user_input(question)
@@ -46,9 +46,14 @@ loop do
   end
 
   prompt("Based on the information you've given...")
-  prompt("Your monthly payment should be " \
-         "$#{format('%02.2f', monthly_payment)}") unless duration_months.zero?
-  prompt("Your total payment is $#{monthly_payment}") if duration_months.zero?
+
+  if duration_months.zero?
+    prompt("Your total payment is $#{format('%02.2f', monthly_payment)}")
+  else
+    prompt("Your monthly payment should be " \
+           "$#{format('%02.2f', monthly_payment)}")
+  end
+
   puts
   prompt("Would you like to calculate another mortgage?(Y/N)")
   calc_again = gets.chomp.downcase
