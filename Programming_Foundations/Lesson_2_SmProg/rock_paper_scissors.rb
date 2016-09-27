@@ -46,9 +46,9 @@ end
 
 def display_results(player, computer)
   if winning_matchup(player, computer)
-    prompt("You won!")
+    prompt("You won this round!")
   elsif winning_matchup(computer, player)
-    prompt("You lost!")
+    prompt("You lost this round!")
   else
     prompt("It's a tie!")
   end
@@ -68,20 +68,34 @@ def who_won?(player, computer)
   end
 end
 
+def die
+  prompt("Thank you for playing, goodbye!")
+  exit
+end
+
 player_score = 0
 computer_score = 0
 name = nil
 
-welcome_message = <<~MSG
+welcome_message = <<-MSG
 Welcome to Rock Paper Scissors Lizard Spock
 => The first to 5 points wins!
+MSG
+
+possible_choices = <<-MSG
+Choose one
+r.) Rock
+p.) Paper
+ss.) Scissors
+l.) Lizard
+sp.) Spock
 MSG
 
 prompt(welcome_message)
 loop do
   prompt("What is your name?")
   name = Kernel.gets().chomp()
-  if name.empty?
+  if name.strip.empty?
     prompt("Please enter your name.")
   else
     break
@@ -89,55 +103,53 @@ loop do
 end
 
 puts
-
+prompt("#{name}, let's begin! (Enter 'Q' anytime to quit)")
 loop do
   choice = nil
 
   loop do
-    possible_choices = "Choose one:\n"\
-      "r.) Rock\n"\
-      "p.) Paper\n"\
-      "ss.) Scissors\n"\
-      "l.) Lizard\n"\
-      "sp.) Spock\n"
+    loop do
+      prompt(possible_choices)
+      choice = Kernel.gets().chomp().downcase()
+      die if choice == 'q'
+      choice = VALID_CHOICES[choice]
 
-    prompt(possible_choices)
-    choice = Kernel.gets().chomp()
-    choice = VALID_CHOICES[choice.downcase]
+      break if VALID_CHOICES.value?(choice)
+      puts
+      prompt("Invalid choice. Please enter either r, p, ss, l, or sp")
+    end
 
-    break if VALID_CHOICES.value?(choice)
-    puts
-    prompt("Invalid choice.")
-  end
+    computer_choice = VALID_CHOICES.values.sample
 
-  computer_choice = VALID_CHOICES.values.sample
+    prompt("You chose #{choice}, computer chose #{computer_choice}")
+    display_results(choice, computer_choice)
 
-  prompt("You chose #{choice}, computer chose #{computer_choice}")
-  display_results(choice, computer_choice)
+    winner = who_won?(choice, computer_choice)
+    if winner == 'player'
+      player_score += 1
+    elsif winner == 'computer'
+      computer_score += 1
+    end
 
-  winner = who_won?(choice, computer_choice)
-  if winner == 'player'
-    player_score += 1
-  elsif winner == 'computer'
-    computer_score += 1
-  end
-
-  if player_score == 5
-    prompt("You reached 5 points! You won the game!")
-    player_score = 0
-    computer_score = 0
-  elsif computer_score == 5
-    prompt("Computer reached 5 points! You lost the game!")
-    player_score = 0
-    computer_score = 0
-  else
-    prompt("The score is You: #{player_score}. Computer: #{computer_score}")
+    if player_score == 5
+      prompt("Yay! #{name} reached 5 points! #{name} won the game!")
+      player_score = 0
+      computer_score = 0
+      break
+    elsif computer_score == 5
+      prompt("Oh no! Computer reached 5 points! #{name} lost the game!")
+      player_score = 0
+      computer_score = 0
+      break
+    else
+      prompt("The score is #{name}: #{player_score}. "\
+             "Computer: #{computer_score}")
+      puts
+    end
   end
 
   puts
   prompt("Would you like to play again? (Y/N)")
   play_again = Kernel.gets().chomp()
-  break unless play_again.casecmp('y').zero? || play_again.casecmp('yes').zero?
+  die unless play_again.casecmp('y').zero? || play_again.casecmp('yes').zero?
 end
-
-prompt("Thank you for playing, goodbye!")
