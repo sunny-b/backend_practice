@@ -60,11 +60,11 @@ end
 
 def the_winner(player, computer)
   if winning?(player, computer)
-    return "player"
+    "player"
   elsif winning?(computer, player)
-    return "computer"
+    "computer"
   else
-    return "tie"
+    "tie"
   end
 end
 
