@@ -36,7 +36,7 @@ def spock_won?(player1, player2)
    player2 == 'scissors'))
 end
 
-def winning_matchup(player1, player2)
+def winning?(player1, player2)
   rock_won?(player1, player2) ||
     paper_won?(player1, player2) ||
     scissors_won?(player1, player2) ||
@@ -45,9 +45,9 @@ def winning_matchup(player1, player2)
 end
 
 def display_results(player, computer)
-  if winning_matchup(player, computer)
+  if winning?(player, computer)
     prompt("You won this round!")
-  elsif winning_matchup(computer, player)
+  elsif winning?(computer, player)
     prompt("You lost this round!")
   else
     prompt("It's a tie!")
@@ -58,10 +58,10 @@ def prompt(message)
   Kernel.puts("=> #{message}")
 end
 
-def who_won?(player, computer)
-  if winning_matchup(player, computer)
+def the_winner(player, computer)
+  if winning?(player, computer)
     return "player"
-  elsif winning_matchup(computer, player)
+  elsif winning?(computer, player)
     return "computer"
   else
     return "tie"
@@ -89,6 +89,7 @@ p.) Paper
 ss.) Scissors
 l.) Lizard
 sp.) Spock
+q.) Quit
 MSG
 
 prompt(welcome_message)
@@ -124,7 +125,7 @@ loop do
     prompt("You chose #{choice}, computer chose #{computer_choice}")
     display_results(choice, computer_choice)
 
-    winner = who_won?(choice, computer_choice)
+    winner = the_winner(choice, computer_choice)
     if winner == 'player'
       player_score += 1
     elsif winner == 'computer'
