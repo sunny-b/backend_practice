@@ -3,13 +3,10 @@ require "pry"
 GAME_NUMBER = 21
 STAY_NUMBER = 17
 
-# rubocop:disable Metrics/MethodLength
 def total(hand)
   score = 0
-  cards = []
-  hand.each { |str| cards << str.split.first }
-
-  cards.each do |card|
+  hand.map do |cards|
+    card = cards.split.first
     score += if card == 'Ace'
                11
              elsif card.to_i.zero?
@@ -19,26 +16,32 @@ def total(hand)
              end
   end
 
-  cards.select { |card| card == 'Ace' }.count.times do
+  hand.select { |cards| cards.split.first == 'Ace' }.count.times do
     score -= 10 if score > 21
   end
 
   score
 end
-# rubocop:enable Metrics/MethodLength
 
 def prompt(msg)
   puts("=> #{msg}")
 end
 
+def clear_screen
+  system('clear') || system('cls')
+end
+
 def calculate_winner(player, dealer)
-  if busted?(total(dealer))
+  total_player = total(player)
+  total_dealer = total(dealer)
+
+  if busted?(total_dealer)
     "Player"
-  elsif busted?(total(player))
+  elsif busted?(total_player)
     "Dealer"
-  elsif total(player) > total(dealer)
+  elsif total_player > total_dealer
     'Player'
-  elsif total(player) < total(dealer)
+  elsif total_player < total_dealer
     'Dealer'
   else
     "Tie"
@@ -59,11 +62,11 @@ def display_score(player_score, dealer_score)
   prompt("Player: #{player_score} vs. Dealer: #{dealer_score}")
 end
 
-def hit!(deck, current_player)
+def hit!(deck, player_hand)
   suit = deck.keys.sample
   card = deck[suit].sample
   deck[suit].delete(card)
-  current_player << name_card(suit, card)
+  player_hand << name_card(suit, card)
 end
 
 def initialize_deck
@@ -77,32 +80,30 @@ def initialize_deck
 end
 
 def name_card(suit, card)
-  if card.to_i.zero?
-    name = case card
-           when "A"
-             "Ace"
-           when "J"
-             "Jack"
-           when "Q"
-             "Queen"
-           when "K"
-             "King"
-           end
-  else
-    name = card
-  end
+  name = case card
+         when "A"
+           "Ace"
+         when "J"
+           "Jack"
+         when "Q"
+           "Queen"
+         when "K"
+           "King"
+         else
+           card
+         end
   "#{name} of #{suit}"
 end
 
 def joinand(array, deliminator = ', ', final = 'and')
   if array.size == 1
-    return array.first
+    array.first
   else
     last = array.pop
     string = array.join(deliminator)
     string << " #{final} #{last}"
     array << last
-    return string
+    string
   end
 end
 
@@ -118,27 +119,28 @@ def initial_deal!(player_hand, dealer_hand, deck)
 end
 
 def die
-  prompt("Thank you for playing, goodbye!")
+  prompt('Thank you for playing, goodbye!')
   exit
 end
 
 def game_end(player_hand, dealer_hand)
   prompt("#{calculate_winner(player_hand, dealer_hand)} won the game!")
-  prompt("Enter \"(y)es \"if you want to play again."\
-         " Otherwise, press \"Enter\"")
+  prompt('Enter "(y)es"if you want to play again.'\
+         ' Otherwise, press "Enter"')
   play_again = gets.chomp.downcase
   die unless play_again == 'y' || play_again == 'yes'
-  puts
-  puts
+  clear_screen
 end
 
 def play_again
-  prompt("Press \"Enter\" to play again")
+  prompt('Press "Enter" to play again')
   gets.chomp
+  clear_screen
 end
 
-prompt("Welcome to 21!")
-prompt("The first person to 5 points wins the game!")
+clear_screen
+prompt('Welcome to 21!')
+prompt('The first person to 5 points wins the game!')
 
 puts
 player_score = 0
@@ -150,7 +152,7 @@ loop do
   dealer_hand = []
 
   initial_deal!(player_hand, dealer_hand, deck)
-  prompt("You were dealt in.")
+  prompt('You were dealt in.')
   prompt("Your hand: #{joinand(player_hand)}"\
          " for a total of #{total(player_hand)}")
   prompt("Dealer showing: #{dealer_hand[0]} and ?")
@@ -177,26 +179,26 @@ loop do
   player_total = total(player_hand)
 
   if busted?(player_total)
-    prompt("Oh no! You busted! The dealer won!")
+    prompt('Oh no! You busted! The dealer won!')
 
     dealer_score += 1
   else
     prompt("You stayed at #{player_total}")
-    prompt("Dealer's turn.")
+    prompt('Dealer\'s turn.')
     loop do
       dealer_total = total(dealer_hand)
       if dealer_total > GAME_NUMBER
-        prompt("Dealer busts!")
+        prompt('Dealer busts!')
         break
       elsif dealer_total > player_total ||
             dealer_total == 21 ||
             (dealer_total == player_total &&
             dealer_total >= STAY_NUMBER)
-        prompt("Dealer stays.")
+        prompt('Dealer stays.')
         break
       else
         hit!(deck, dealer_hand)
-        prompt("Dealer hits!")
+        prompt('Dealer hits!')
       end
     end
 
@@ -225,4 +227,6 @@ loop do
     next
   end
   game_end(player_hand, dealer_hand)
+  player_score = 0
+  dealer_score = 0
 end
