@@ -92,34 +92,38 @@ end
 
 def joinor(array, deliminator = ', ', final = 'or')
   if array.size == 1
-    return array.first
+    array.first
   else
     last = array.pop
     string = array.join(deliminator)
     string << " #{final} #{last}"
     array << last
-    return string
+    string
   end
 end
 
 def at_risk_square(brd)
-  WINNING_LINES.each do |line|
-    if offense?(brd, line) || defense?(brd, line)
-      square = brd.select do |k, v|
-        line.include?(k) && v == INITIAL_MARKER
-      end.keys.first
-      return square
-    end
+  offense = find_square(brd, COMPUTER_MARKER)
+  defense = find_square(brd, PLAYER_MARKER)
+  if !!offense
+    offense
+  elsif !!defense
+    defense
+  else
+    nil
   end
-  nil
 end
 
-def find_sqaure(brd, line)
-  line.each do |square|
-    if brd[square] == INITIAL_MARKER
-      return square
-    end
+def find_square(brd, mark)
+  WINNING_LINES.each do |line|
+    next unless (brd.values_at(*line).count(mark) == 2 && # Offense
+                 brd.values_at(*line).count(INITIAL_MARKER) == 1)
+    square = brd.select do |sqr, marker|
+      line.include?(sqr) && marker == INITIAL_MARKER
+    end.keys.first
+    return square
   end
+  nil
 end
 
 def needs_to_move?(brd)
@@ -146,16 +150,6 @@ def alternate_player(current_player)
   when 'Computer'
     current_player.replace 'Player'
   end
-end
-
-def offense?(brd, line)
-  (brd.values_at(*line).count(COMPUTER_MARKER) == 2 && # Offense
-   brd.values_at(*line).count(INITIAL_MARKER) == 1)
-end
-
-def defense?(brd, line)
-  (brd.values_at(*line).count(PLAYER_MARKER) == 2 && # Defense
-   brd.values_at(*line).count(INITIAL_MARKER) == 1)
 end
 
 player_score = 0
@@ -198,7 +192,7 @@ loop do
     prompt("Press 'Enter' to play again")
     gets.chomp
   end
-  prompt("Would you like to play again?(Y/N)")
+  prompt("Would you like to play again?(Y)")
   play_again = gets.chomp.downcase
   die unless play_again == 'y' || play_again == 'yes'
 end

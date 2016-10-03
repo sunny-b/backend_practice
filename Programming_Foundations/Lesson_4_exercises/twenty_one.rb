@@ -1,32 +1,35 @@
 require "pry"
 
+# rubocop:disable Metrics/MethodLength
 def total(hand)
   score = 0
-  cards = hand.values.flatten
+  cards = []
+  hand.each { |str| cards << str.split.first }
 
   cards.each do |card|
-    if card == 'A'
+    if card == 'Ace'
       score += 11
-    elsif card.to_i == 0
+    elsif card.to_i.zero?
       score += 10
     else
       score += card.to_i
     end
   end
 
-  cards.select { |card| card == 'A' }.count.times do 
+  cards.select { |card| card == 'Ace' }.count.times do
     score -= 10 if score > 21
   end
 
   score
 end
+# rubocop:enable Metrics/MethodLength
 
 def prompt(msg)
   puts("=> #{msg}")
 end
 
 def calculate_winner(player, dealer)
-  if total(player) > total(dealer)
+  if total(player) > total(dealer) || busted?(total(dealer))
     "Player"
   elsif total(player) < total(dealer)
     "Dealer"
@@ -46,23 +49,24 @@ def display_winner(winner)
 end
 
 def hit!(deck, current_player)
-  type = deck.keys.sample
-  card = deck[type].sample
-  deck[type].delete(card)
-  current_player[type] << card
+  suit = deck.keys.sample
+  card = deck[suit].sample
+  deck[suit].delete(card)
+  current_player << name_card(suit, card)
 end
 
 def initialize_deck
-  {
-  "Spades" => %w(A 2 3 4 5 6 7 8 9 10 J Q K),
-  "Clubs" => %w(A 2 3 4 5 6 7 8 9 10 J Q K),
-  "Hearts" => %w(A 2 3 4 5 6 7 8 9 10 J Q K),
-  "Diamonds" => %w(A 2 3 4 5 6 7 8 9 10 J Q K),
-  }
+  suits = %w(Spades Clubs Hearts Diamonds)
+  cards = %w(A 2 3 4 5 6 7 8 9 10 J Q K)
+  deck = {}
+  4.times do |num|
+    deck[suits[num]] = cards
+  end
+  deck
 end
 
-def display_card(category, card)
-  if card.to_i == 0
+def name_card(suit, card)
+  if card.to_i.zero?
     name = case card
            when "A"
              "Ace"
@@ -76,11 +80,19 @@ def display_card(category, card)
   else
     name = card
   end
-  prompt("You were dealt the #{name} of #{category}")
+  "#{name} of #{suit}"
 end
 
-def display_hand(player_hand)
-
+def joinand(array, deliminator = ', ', final = 'and')
+  if array.size == 1
+    return array.first
+  else
+    last = array.pop
+    string = array.join(deliminator)
+    string << " #{final} #{last}"
+    array << last
+    return string
+  end
 end
 
 def busted?(hand_score)
@@ -94,53 +106,72 @@ def initial_deal!(player_hand, dealer_hand, deck)
   end
 end
 
+def die
+  prompt("Thank you for playing, goodbye!")
+  exit
+end
 
-deck = initialize_deck
-
-player_hand = {
-  "Spades" => [],
-  "Clubs" => [],
-  "Hearts" => [],
-  "Diamonds" => []
-}
-
-dealer_hand = {
- "Spades" => [],
- "Clubs" => [],
- "Hearts" => [],
- "Diamonds" => []
-}
+def play_again
+  prompt("Would you like to play again?(Y/N)")
+  play_again = gets.chomp.downcase
+  die unless play_again == 'y' || play_again == 'yes'
+  puts
+  puts
+end
 
 prompt("Welcome to 21!")
 puts
 
 loop do
+  deck = initialize_deck
+  player_hand = []
+  dealer_hand = []
+
   initial_deal!(player_hand, dealer_hand, deck)
   prompt("You were dealt in.")
-  prompt("Your hand")
+  prompt("Your hand: #{joinand(player_hand)}"\
+         " for a total of #{total(player_hand)}")
+  prompt("Dealer showing: #{dealer_hand[0]} and ?")
   loop do
-    prompt("Hit or Stay?")
+    prompt("(H)it or (S)tay?")
     answer = gets.chomp.downcase
-    break if answer == 'stay'
+    break if answer == 'stay' || answer == 's'
     hit!(deck, player_hand)
-    display_card(type, card)
-    break if busted?(total(player_hand))
+    player_total = total(player_hand)
+    prompt("Your hand: #{joinand(player_hand)}.")
+    prompt("Your score: #{player_total}")
+    break player_total if busted?(player_total)
   end
 
-  if busted?
-    prompt("Oh no! You busted!")
-    prompt("Would you like to play again?(Y/N)")
-    play_again = gets.chomp.downcase
-    break unless play_again == 'y' || play_again == 'yes'
+  player_total = total(player_hand)
+
+  if busted?(player_total)
+    prompt("Oh no! You busted! The dealer won!")
   else
-    puts "You chose to stay!"
-  end
-
-  loop do
-    if total(dealer_hand) >= 17
-      break
-    else
-      hit(deck, dealer_hand)
+    prompt("You stayed at #{player_total}")
+    prompt("Dealer's turn.")
+    loop do
+      dealer_total = total(dealer_hand)
+      if dealer_total > 21
+        prompt("Dealer busts!")
+        break
+      elsif ((dealer_total > player_total) &&
+            dealer_total >= 17) || dealer_total == 21
+        prompt("Dealer stays.")
+        break
+      else
+        hit!(deck, dealer_hand)
+        prompt("Dealer hits!")
+      end
     end
+
+    puts("============")
+    prompt("Dealer has #{joinand(dealer_hand)} "\
+           "for a total of: #{total(dealer_hand)}")
+    prompt("Player has #{joinand(player_hand)} "\
+           "for a total of: #{player_total}")
+    puts("============")
+    display_winner(calculate_winner(player_hand, dealer_hand))
   end
+  play_again
 end
