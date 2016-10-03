@@ -1,5 +1,8 @@
 require "pry"
 
+GAME_NUMBER = 21
+STAY_NUMBER = 17
+
 # rubocop:disable Metrics/MethodLength
 def total(hand)
   score = 0
@@ -29,10 +32,14 @@ def prompt(msg)
 end
 
 def calculate_winner(player, dealer)
-  if total(player) > total(dealer) || busted?(total(dealer))
+  if busted?(total(dealer))
     "Player"
-  elsif total(player) < total(dealer)
+  elsif busted?(total(player))
     "Dealer"
+  elsif total(player) > total(dealer)
+    'Player'
+  elsif total(player) < total(dealer)
+    'Dealer'
   else
     "Tie"
   end
@@ -46,6 +53,10 @@ def display_winner(winner)
   else
     prompt("It's a draw!")
   end
+end
+
+def display_score(player_score, dealer_score)
+  prompt("Player: #{player_score} vs. Dealer: #{dealer_score}")
 end
 
 def hit!(deck, current_player)
@@ -96,7 +107,7 @@ def joinand(array, deliminator = ', ', final = 'and')
 end
 
 def busted?(hand_score)
-  hand_score > 21
+  hand_score > GAME_NUMBER
 end
 
 def initial_deal!(player_hand, dealer_hand, deck)
@@ -111,16 +122,27 @@ def die
   exit
 end
 
-def play_again
-  prompt("Would you like to play again?(Y/N)")
+def game_end(player_hand, dealer_hand)
+  prompt("#{calculate_winner(player_hand, dealer_hand)} won the game!")
+  prompt("Enter \"(y)es \"if you want to play again."\
+         " Otherwise, press \"Enter\"")
   play_again = gets.chomp.downcase
   die unless play_again == 'y' || play_again == 'yes'
   puts
   puts
 end
 
+def play_again
+  prompt("Press \"Enter\" to play again")
+  gets.chomp
+end
+
 prompt("Welcome to 21!")
+prompt("The first person to 5 points wins the game!")
+
 puts
+player_score = 0
+dealer_score = 0
 
 loop do
   deck = initialize_deck
@@ -132,14 +154,23 @@ loop do
   prompt("Your hand: #{joinand(player_hand)}"\
          " for a total of #{total(player_hand)}")
   prompt("Dealer showing: #{dealer_hand[0]} and ?")
+
   loop do
-    prompt("(H)it or (S)tay?")
-    answer = gets.chomp.downcase
+    answer = nil
+    loop do
+      prompt("(H)it or (S)tay?")
+      answer = gets.chomp.downcase
+      break if ['h', 'hit', 's', 'stay'].include?(answer)
+      prompt("Invalid entry. Please enter either 'h' or 's'")
+    end
+
     break if answer == 'stay' || answer == 's'
+
     hit!(deck, player_hand)
     player_total = total(player_hand)
     prompt("Your hand: #{joinand(player_hand)}.")
     prompt("Your score: #{player_total}")
+
     break player_total if busted?(player_total)
   end
 
@@ -147,16 +178,26 @@ loop do
 
   if busted?(player_total)
     prompt("Oh no! You busted! The dealer won!")
+
+    dealer_score += 1
+    display_score(player_score, dealer_score)
+
+    unless player_score == 5 || dealer_score == 5
+      play_again
+      next
+    end
   else
     prompt("You stayed at #{player_total}")
     prompt("Dealer's turn.")
     loop do
       dealer_total = total(dealer_hand)
-      if dealer_total > 21
+      if dealer_total > GAME_NUMBER
         prompt("Dealer busts!")
         break
-      elsif ((dealer_total > player_total) &&
-            dealer_total >= 17) || dealer_total == 21
+      elsif dealer_total > player_total ||
+            dealer_total == 21 ||
+            (dealer_total == player_total &&
+            dealer_total >= STAY_NUMBER)
         prompt("Dealer stays.")
         break
       else
@@ -171,7 +212,23 @@ loop do
     prompt("Player has #{joinand(player_hand)} "\
            "for a total of: #{player_total}")
     puts("============")
-    display_winner(calculate_winner(player_hand, dealer_hand))
+
+    winner = calculate_winner(player_hand, dealer_hand)
+
+    case winner
+    when 'Player'
+      player_score += 1
+    when 'Dealer'
+      dealer_score += 1
+    end
+
+    display_winner(winner)
+    display_score(player_score, dealer_score)
+
+    unless player_score == 5 || dealer_score == 5
+      play_again
+      next
+    end
   end
-  play_again
+  game_end(player_hand, dealer_hand)
 end
