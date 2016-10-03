@@ -10,13 +10,13 @@ def total(hand)
   hand.each { |str| cards << str.split.first }
 
   cards.each do |card|
-    if card == 'Ace'
-      score += 11
-    elsif card.to_i.zero?
-      score += 10
-    else
-      score += card.to_i
-    end
+    score += if card == 'Ace'
+               11
+             elsif card.to_i.zero?
+               10
+             else
+               card.to_i
+             end
   end
 
   cards.select { |card| card == 'Ace' }.count.times do
@@ -180,12 +180,6 @@ loop do
     prompt("Oh no! You busted! The dealer won!")
 
     dealer_score += 1
-    display_score(player_score, dealer_score)
-
-    unless player_score == 5 || dealer_score == 5
-      play_again
-      next
-    end
   else
     prompt("You stayed at #{player_total}")
     prompt("Dealer's turn.")
@@ -223,12 +217,12 @@ loop do
     end
 
     display_winner(winner)
-    display_score(player_score, dealer_score)
+  end
 
-    unless player_score == 5 || dealer_score == 5
-      play_again
-      next
-    end
+  display_score(player_score, dealer_score)
+  unless player_score == 5 || dealer_score == 5
+    play_again
+    next
   end
   game_end(player_hand, dealer_hand)
 end
