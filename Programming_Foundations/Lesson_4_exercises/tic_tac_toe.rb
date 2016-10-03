@@ -109,15 +109,13 @@ def at_risk_square(brd)
     offense
   elsif !!defense
     defense
-  else
-    nil
   end
 end
 
 def find_square(brd, mark)
   WINNING_LINES.each do |line|
-    next unless (brd.values_at(*line).count(mark) == 2 && # Offense
-                 brd.values_at(*line).count(INITIAL_MARKER) == 1)
+    next unless brd.values_at(*line).count(mark) == 2 && # Offense
+                brd.values_at(*line).count(INITIAL_MARKER) == 1
     square = brd.select do |sqr, marker|
       line.include?(sqr) && marker == INITIAL_MARKER
     end.keys.first
@@ -192,7 +190,7 @@ loop do
     prompt("Press 'Enter' to play again")
     gets.chomp
   end
-  prompt("Would you like to play again?(Y)")
+  prompt("Enter (y)es if you would like to play again, otherwise press 'Enter'")
   play_again = gets.chomp.downcase
   die unless play_again == 'y' || play_again == 'yes'
 end
