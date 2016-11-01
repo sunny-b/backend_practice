@@ -152,10 +152,11 @@ end
 
 class Computer < Player
   include GameConstants
-  attr_accessor :percent_option, :cumul_option
+  attr_accessor :percent_option
+  attr_reader :cumul_option
 
   def set_name
-    self.name = self.class
+    self.name = self.class.name
   end
 
   def self.select
@@ -186,10 +187,10 @@ class Computer < Player
     most_key = history.key(most_used)
     least_key = history.key(least_used)
 
-    augment(win_percent, most_key, least_key)
+    change_option_percent(win_percent, most_key, least_key)
   end
 
-  def augment(win_percent, max_key, min_key)
+  def change_option_percent(win_percent, max_key, min_key)
     if win_percent <= SEVERE_LOSE_PERCENT
       adjust_percent_losing(0.2, max_key, min_key)
     elsif win_percent <= LOSING_PERCENT
@@ -378,8 +379,7 @@ class RPSGame
       break if ['y', 'yes', 'n', 'no'].include? answer
       puts "Sorry, that's not a valid choice"
     end
-    return true if ['y', 'yes'].include? answer
-    false
+    ['y', 'yes'].include? answer
   end
 
   def die
@@ -389,6 +389,7 @@ class RPSGame
 
   def clear_screen
     system "clear"
+    system 'cls'
   end
 
   def reset_game
@@ -427,8 +428,6 @@ class RPSGame
     end
     display_goodbye_message
   end
-
-  protected
 
   def determine_winner
     if human.choice > computer.choice
