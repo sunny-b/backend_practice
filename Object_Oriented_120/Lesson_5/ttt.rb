@@ -292,7 +292,7 @@ class TTTGame
   end
 
   def someone_won_game?
-    human.score >= TTTGame::PLAY_TO || computer.score >= TTTGame::PLAY_TO
+    human.score >= PLAY_TO || computer.score >= PLAY_TO
   end
 
   def die
