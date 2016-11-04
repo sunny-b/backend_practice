@@ -42,7 +42,7 @@ module Displayable
   end
 
   def display_board
-    puts "You are #{human.marker}. #{computer.name} is #{computer.marker}"
+    puts "#{human.name} is #{human.marker}. #{computer.name} is #{computer.marker}"
     puts
     board.draw
     puts
