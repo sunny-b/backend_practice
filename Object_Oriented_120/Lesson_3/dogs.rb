@@ -68,9 +68,10 @@ cowboys[1]
 cowboys[3] = Person.new('JJ', 72)
 cowboys[3]
 
-dream_team = cowboys + niners # => #<Team:0x007fd5510fcb88 @name="Temporary Team", @members=[#<Person:0x007fd5510fce30 @name="Troy Aikman", @age=46>, #<Person:0x007fd5510fcde0 @name="Troy Aikman", @age=48>, #<Person:0x007fd5510fcd90 @name="Michael Irvin", @age=49>, #<Person:0x007fd5510fcbd8 @name="JJ", @age=72>, #<Person:0x007fd5510fccc8 @name="Joe Montana", @age=59>, #<Person:0x007fd5510fcc78 @name="Jerry Rice", @age=52>, #<Person:0x007fd5510fcc28 @name="Deion Sanders", @age=47>]>
-dream_team.name = 'Dream Team'
+dream_team = cowboys + niners # => #<Team:0x007fb8d28d4068 @name="Temporary Team", @members=[#<Person:0x007fb8d28d4428 @name="Troy Aikman", @age=46>, #<Person:0x007fb8d28d4388 @name="Troy Aikman", @age=48>, #<Person:0x007fb8d28d4338 @name="Michael Irvin", @age=49>, #<Person:0x007fb8d28d4130 @name="JJ", @age=72>, #<Person:0x007fb8d28d4270 @name="Joe Montana", @age=59>, #<Person:0x007fb8d28d41d0 @name="Jerry Rice", @age=52>, #<Person:0x007fb8d28d4180 @name="Deion Sanders", @age=47>]>
+dream_team.name = 'Dream Team' # => "Dream Team"
 
-dream_team[4]
-dream_team[5] = Person.new('JJ', 72)
+dream_team[4] # => #<Person:0x007fb8d28d4270 @name="Joe Montana", @age=59>
+dream_team[5] = Person.new('JJ', 72) # => #<Person:0x007fb8d2046b08 @name="JJ", @age=72>
+
 # >> 4
