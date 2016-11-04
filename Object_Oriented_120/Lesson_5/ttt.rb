@@ -17,7 +17,7 @@ module Displayable
   end
 
   def display_game_winner
-    winner = human.won? ? human.name : computer.name
+    winner = (human.score >= TTTGame::PLAY_TO ? human.name : computer.name)
     puts "#{winner} was the first to #{TTTGame::PLAY_TO} points. #{winner} won!"
   end
 
@@ -42,7 +42,8 @@ module Displayable
   end
 
   def display_board
-    puts "#{human.name} is #{human.marker}. #{computer.name} is #{computer.marker}"
+    puts "#{human.name} is #{human.marker}."\
+         " #{computer.name} is #{computer.marker}"
     puts
     board.draw
     puts
@@ -179,10 +180,6 @@ class Player
 
   def reset_score
     self.score = 0
-  end
-
-  def won?
-    self.score >= TTTGame::PLAY_TO
   end
 end
 
