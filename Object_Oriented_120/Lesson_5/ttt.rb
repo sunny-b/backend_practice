@@ -274,6 +274,7 @@ class TTTGame
     display_board
     loop do
       current_player_moves
+      alternate_player
       break if board.someone_won? || board.full?
       clear_screen_and_display_board if human_turn?
     end
@@ -372,8 +373,6 @@ class TTTGame
     when human.marker then human_moves
     else computer_moves
     end
-
-    alternate_player
   end
 
   def joinor(array, delimiter = ', ', word = 'or')
