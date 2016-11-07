@@ -240,13 +240,13 @@ class Round
     end
   end
 
-  def main_loop(game, player, dealer, deck)
+  def main_game_loop(game, player, dealer, deck)
     loop do
       scoring(game, player, dealer, deck)
       game.display_game_winner
       return unless game.play_again?
       clear_screen
-      game.reset_game
+      game.reset
     end
   end
 end
@@ -270,7 +270,7 @@ class Game
     clear_screen
     display_welcome_message
     set_names
-    round.main_loop(self, player, dealer, deck)
+    round.main_game_loop(self, player, dealer, deck)
     display_goodbye_message
   end
 
@@ -294,7 +294,7 @@ class Game
     dealer.reset_hand
   end
 
-  def reset_game
+  def reset
     player.overall_reset
     dealer.overall_reset
   end
