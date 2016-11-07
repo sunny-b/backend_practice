@@ -54,7 +54,8 @@ end
 class Participant
   include Clearable
 
-  attr_accessor :name, :hand, :score
+  attr_reader :name
+  attr_accessor :hand, :score
 
   def initialize
     @hand = []
@@ -263,8 +264,7 @@ class Game
   GAME_SCORE = 21
   PLAY_TO = 5
 
-  attr_accessor :player, :dealer
-  attr_reader :deck, :round
+  attr_reader :deck, :round, :player, :dealer
 
   def initialize
     @player = Player.new
