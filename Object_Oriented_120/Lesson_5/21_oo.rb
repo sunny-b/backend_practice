@@ -1,5 +1,3 @@
-require 'pry'
-
 module Clearable
   def clear_screen
     system 'clear'
@@ -22,9 +20,10 @@ module Displayable
   end
 
   def display_winner
-    case !!determine_winner
-    when true then puts "#{determine_winner.name} wins!"
-    else puts "It's a tie!"
+    if determine_winner
+      puts "#{determine_winner.name} wins!"
+    else
+      puts "It's a tie!"
     end
   end
 
@@ -58,8 +57,7 @@ class Participant
   attr_accessor :hand, :score
 
   def initialize
-    @hand = []
-    @score = 0
+    overall_reset
   end
 
   def beat?(other_player)
@@ -81,11 +79,11 @@ class Participant
 
   def hit!(deck)
     @hand << deck.deal!
-    puts "#{name} hit!"
+    puts "#{name} hits!"
   end
 
   def stay
-    puts "#{name} stays"
+    puts "#{name} stays."
   end
 
   def bust?
@@ -188,8 +186,7 @@ class Deck
   FACES = ['Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King'].freeze
 
   def initialize
-    @cards = FACES.product(SUITS)
-    @cards.shuffle!
+    reset
   end
 
   def deal!
@@ -214,11 +211,7 @@ class Card
 
   def score
     return @face if @face.to_s.to_i == @face
-
-    case @face[0]
-    when 'A' then 11
-    else 10
-    end
+    @face[0] == 'A' ? 11 : 10
   end
 end
 
@@ -318,7 +311,7 @@ class Game
   end
 
   def increase_winner_score
-    determine_winner.increase_score if !!determine_winner
+    determine_winner&.increase_score
   end
 
   def determine_winner
@@ -331,7 +324,6 @@ class Game
     elsif dealer.beat?(player)
       return dealer
     end
-    nil
   end
 
   def set_names
