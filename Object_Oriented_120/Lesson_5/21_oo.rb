@@ -173,7 +173,7 @@ class Dealer < Participant
 
   def turn(other_player, deck)
     puts "It's now the Dealer's turn."
-    until (total > other_player.total) || total == Game::GAME_SCORE
+    until beat?(other_player) || total == Game::GAME_SCORE
       hit!(deck)
       return busted(other_player) if bust?
     end
