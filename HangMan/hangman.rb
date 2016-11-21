@@ -197,7 +197,7 @@ class Hangman
   def play_again?
     answer = nil
     loop do
-      puts 'Would you like to play_again? (Y/N)'
+      puts 'Would you like to play again? (Y/N)'
       answer = gets.chomp
       break if %w(y n).include? answer
       puts 'Please enter either Y or N.'
