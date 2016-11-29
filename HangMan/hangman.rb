@@ -132,9 +132,7 @@ class Board
 
   def update_word!(letter)
     indexes = @word.each_index.select { |i| @word[i] == letter.upcase }
-    indexes.each do |index|
-      unknown_word[index] = letter.upcase
-    end
+    indexes.each { |index| unknown_word[index] = letter.upcase }
   end
 
   def update_board!(guess_num)
