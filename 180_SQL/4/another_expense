@@ -1,0 +1,10 @@
+#! /usr/bin/env ruby
+
+require 'pg'
+require 'io/console'
+
+class ExpenseData
+  def initialize
+    @db = PG.connect(dbname: 'expenses')
+  end
+end
