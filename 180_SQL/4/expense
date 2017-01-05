@@ -2,7 +2,6 @@
 
 require 'pg'
 require 'io/console'
-require 'pry'
 
 class ExpenseData
   def initialize

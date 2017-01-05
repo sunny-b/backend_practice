@@ -7,4 +7,8 @@ class ExpenseData
   def initialize
     @db = PG.connect(dbname: 'expenses')
   end
+
+  def all_expenses
+    result = @db.exec ""
+  end
 end
