@@ -1,4 +1,0 @@
-The %{adjective} %{color} %{noun} %{adverb}
-%{verb} the %{adjective} %{color} %{noun},
-who %{adverb} %{verb} his %{noun} and 
-%{verb} around.
